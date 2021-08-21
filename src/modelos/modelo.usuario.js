@@ -6,6 +6,7 @@ var ModeloUsuario = Schema({
     carnet: Number,
     nombre: String,
     apellido: String,
+    usuario: String,
     correoelectronico: String,
     contrasena: String,
     rol: String,
