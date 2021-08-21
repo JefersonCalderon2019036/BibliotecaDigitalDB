@@ -148,11 +148,11 @@ function EditarUsuarioComoAdmin(req, res){
 
     Usuario.findOne({ _id: userId, rol: "admin"}, (err, usuariosEncontrado) =>{
         if (err) return res.status(404).send({mensaje: "Error en la petición de busqueda"});
-        if(!usuariosEncontrado) return res.status(404).send({mensaje: "No tienes permiso para realizar esta petición"});
+        if(!usuariosEncontrado) return res.status(200).send({mensaje: "No tienes permiso para realizar esta petición"});
 
         Usuario.findByIdAndUpdate(userIdEditar, params, {new: true}, (err, editarusuario) => {
-            if(err) return res.status(500).send({mensaje: 'Error en la petición de editar'})
-            if(!editarusuario) return res.status(404).send({mensaje: 'No se ha podido actualizar el usuario'})
+            if(err) return res.status(404).send({mensaje: 'Error en la petición de editar'})
+            if(!editarusuario) return res.status(200).send({mensaje: 'No se ha podido actualizar el usuario'})
             return res.status(200).send(editarusuario)
         })
     })
@@ -169,6 +169,32 @@ function EditarMiPropioUsuario(req, res){
     })
 }
 
+function EliminarUsuariosComoAdmin(req, res){
+    var userId = req.params.idU
+    var ElIdU = req.params.EIdU
+
+    Usuario.findOne({ _id: userId, rol: "admin"}, (err, usuariosEncontrado) =>{
+        if (err) return res.status(404).send({mensaje: "Error en la petición de busqueda"});
+        if(!usuariosEncontrado) return res.status(200).send({mensaje: "No tienes permiso para realizar esta petición"});
+
+        Usuario.findByIdAndDelete(ElIdU, (err, eliminarusuario) => {
+            if(err) return res.status(404).send({mensaje: 'Error en la petición de eliminar'})
+            if(!eliminarusuario) return res.status(200).send({mensaje: 'No se ha podido eliminar el usuario'})
+            return res.status(200).send({mensaje: 'Su usuario fue eliminado'})
+        })
+    })
+}
+
+function EliminarMiUsuario(req, res){
+    var ElIdU = req.params.EIdU
+
+    Usuario.findByIdAndDelete(ElIdU, (err, eliminarusuario) => {
+        if(err) return res.status(404).send({mensaje: 'Error en la petición de eliminar'})
+        if(!eliminarusuario) return res.status(200).send({mensaje: 'No se ha podido eliminar el usuario'})
+        return res.status(200).send({mensaje: 'Su usuario fue eliminado'})
+    })
+}
+
 module.exports = {
     login,
     CrearUnAdministrador,
@@ -176,5 +202,7 @@ module.exports = {
     ListarTodosLosUsuarios,
     BuscarUnUsuarioId,
     EditarUsuarioComoAdmin,
-    EditarMiPropioUsuario
+    EditarMiPropioUsuario,
+    EliminarUsuariosComoAdmin,
+    EliminarMiUsuario
 }
