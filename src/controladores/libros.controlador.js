@@ -80,7 +80,19 @@ function buscarporpalabrasclaves(req, res){
     Libros.find({palabrasclaves: params},(err, LibrosEncontrados) => {
         if(err) return res.status(500).send({mensaje: 'Error en la peticion'})
         if(!LibrosEncontrados) return res.status(500).send({mensaje: 'Error al obtener los libros'})
-        return res.status(200).send(LibrosEncontrados)
+        if(LibrosEncontrados <= 0){
+            Libros.find({Temas: params},(err, LibroEncontrado) => {
+                if(err) return res.status(500).send({mensaje: 'Error en la peticion'})
+                if(!LibrosEncontrados) return res.status(500).send({mensaje: 'Error al obtener los libros'})
+                if(LibroEncontrado <= 0){
+                    return res.status(200).send({mensaje: 'No hay libros con estos datos de busqueda'})
+                }else{
+                    return res.status(200).send(LibroEncontrado)
+                }
+            })
+        }else{
+            return res.status(200).send(LibrosEncontrados)
+        }
     })
 }
 
