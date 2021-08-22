@@ -11,8 +11,14 @@ function CrearUnAdministrador(req, res){
         if(err) console.log("Error en la petición de busqueda de usuario")
 
         if(UsuarioEncontrado){
-            console.log('Usuario administrador ya creado')
-            console.log(UsuarioEncontrado)
+            const clc = require('cli-color'); 
+            console.log("")
+            console. log(clc. green('Ya existe tu usuario administrador'));
+            console.log("Tu usuario administrador es:")
+            console.log("Nombre del usuario: "+clc. green(UsuarioEncontrado.usuario))
+            console.log("Correo electronico: "+clc. green(UsuarioEncontrado.correoelectronico))
+            console.log("Contraseña: "+clc. green(UsuarioEncontrado.contrasena))
+            console.log("")
         }else{
             bcrypt.hash("adminpractica", null, null, (err, passwordHash) => {
 
@@ -110,7 +116,7 @@ function BuscarUnUsuarioId(req, res){
 
     Usuario.findOne({ _id: userId}, (err, usuariosEncontrado) =>{
         if (err) return res.status(500).send({mensaje: "Error en la peticion"});
-        if(!usuariosEncontrado) return res.status(404).send({mensaje: "No tienes permiso para realizar esta petición"});
+        if(!usuariosEncontrado) return res.status(404).send({mensaje: "No hay ningun usuario con este código de registro"});
         res.status(200).send(usuariosEncontrado)
     })    
 }
@@ -125,6 +131,11 @@ function login(req, res){
         if(usuariosEncontrado){
             bcrypt.compare(params.contrasena, usuariosEncontrado.contrasena, (err, passCorrecta)=>{
                 if(passCorrecta){
+                    const clc = require('cli-color'); 
+                    console.log("Usuario Logeado")
+                    console.log("Nombre del usuario: "+clc. green(usuariosEncontrado.usuario))
+                    console.log("Correo electronico: "+clc. green(usuariosEncontrado.correoelectronico))
+                    console.log("")
                     return res.status(200).send({
                         token: jwt.createToken(usuariosEncontrado),
                         usuariosEncontrado
