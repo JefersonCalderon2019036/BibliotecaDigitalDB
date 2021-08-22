@@ -14,5 +14,6 @@ api.get("/buscarporpalabrasclaves", md_autentication.ensureAuth, controladordeli
 api.get("/ObtenerTodosLosLibros", md_autentication.ensureAuth, controladordelibros.ObtenerTodosLosLibros)
 api.get("/ObtenerUnSoloLibro/:idU", md_autentication.ensureAuth, controladordelibros.ObtenerUnSoloLibro)
 api.put("/EditarLibros/:idU/:IdE", md_autentication.ensureAuth, controladordelibros.EditarLibros)
+api.delete("/ELiminarUnLibro/:idU/:IdE", md_autentication.ensureAuth, controladordelibros.ELiminarUnLibro)
 
 module.exports = api;

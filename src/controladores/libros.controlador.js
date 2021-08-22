@@ -60,7 +60,7 @@ function AgregarUnNuevoLibro(req, res){
                                 arraytemas.push(temas)
                             }
 
-
+                            ModeloLibros.imagen = params.imagen;
                             ModeloLibros.autor = params.autor;
                             ModeloLibros.nombre = params.nombre;
                             ModeloLibros.edicion = params.edicion;
@@ -192,10 +192,27 @@ function EditarLibros(req, res){
     })
 }
 
+function ELiminarUnLibro(req, res){
+    var userId = req.params.idU
+    var Eid = req.params.IdE
+
+    Usuario.findOne({ _id: userId, rol: "admin"}, (err, usuariosEncontrado) =>{
+        if (err) return res.status(404).send({mensaje: "Error en la petición de busqueda"});
+        if(!usuariosEncontrado) return res.status(404).send({mensaje: "No tienes permiso para realizar esta petición"});
+
+        Libros.findByIdAndDelete(Eid, (err, eliminarusuario) => {
+            if(err) return res.status(500).send({mensaje: 'Error en la petición de eliminar'})
+            if(!eliminarusuario) return res.status(404).send({mensaje: 'No se ha podido eliminar el libro'})
+            return res.status(200).send({mensaje: 'Su libro fue eliminado exitosamente'})
+        })
+    })
+}
+
 module.exports = {
     AgregarUnNuevoLibro,
     buscarporpalabrasclaves,
     ObtenerTodosLosLibros,
     ObtenerUnSoloLibro,
-    EditarLibros
+    EditarLibros,
+    ELiminarUnLibro
 }
