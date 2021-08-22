@@ -108,7 +108,21 @@ function buscarporpalabrasclaves(req, res){
     })
 }
 
+function ObtenerTodosLosLibros(req, res){
+
+    Libros.find((err, UsuariosEncontrados) => {
+        if(err) return res.status(500).send({mensaje: 'Error en la peticion'})
+        if(!UsuariosEncontrados) return res.status(500).send({mensaje: 'Error al obtener los libros'})
+        if(UsuariosEncontrados <= 0){
+            return res.status(404).send({mensaje: 'No hay ningun libro'})
+        }else{
+            return res.status(200).send(UsuariosEncontrados)
+        }
+    })
+}
+
 module.exports = {
     AgregarUnNuevoLibro,
-    buscarporpalabrasclaves
+    buscarporpalabrasclaves,
+    ObtenerTodosLosLibros
 }

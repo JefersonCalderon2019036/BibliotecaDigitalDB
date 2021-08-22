@@ -11,6 +11,6 @@ var md_autentication = require("../middlewares/authenticated")
 var api = express.Router();
 api.post("/AgregarUnNuevoLibro/:idU",md_autentication.ensureAuth, controladordelibros.AgregarUnNuevoLibro)
 api.get("/buscarporpalabrasclaves", md_autentication.ensureAuth, controladordelibros.buscarporpalabrasclaves)
-
+api.get("/ObtenerTodosLosLibros", md_autentication.ensureAuth, controladordelibros.ObtenerTodosLosLibros)
 
 module.exports = api;

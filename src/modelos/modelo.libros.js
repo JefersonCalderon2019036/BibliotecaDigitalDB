@@ -10,13 +10,7 @@ var ModeloDeLibros = Schema({
     copias: Number,
     Dispobles: Number,
     Temas: [],
-    palabrasclaves: [],
-    Usuarios: [{idusuario:String, 
-                Nombre: String, 
-                Apellido: String,
-                FechadeSalida: String,
-                FechadeEntrega: String,
-                estado: String}]
+    palabrasclaves: []
 })
 
 module.exports = mongooes.model("Libros", ModeloDeLibros)
