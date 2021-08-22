@@ -228,56 +228,46 @@ function login(req, res){
 function EditarUsuarioComoAdmin(req, res){
     var params = req.body;
     var userId = req.params.idU
-    var userIdEditar = req.params.IdUserEditar
 
     Usuario.findOne({ _id: userId, rol: "admin"}, (err, usuariosEncontrado) =>{
         if (err) return res.status(404).send({mensaje: "Error en la petición de busqueda"});
         if(!usuariosEncontrado) return res.status(404).send({mensaje: "No tienes permiso para realizar esta petición"});
 
-        Usuario.findByIdAndUpdate(userIdEditar, params, {new: true}, (err, editarusuario) => {
-            if(err) return res.status(500).send({mensaje: 'Error en la petición de editar'})
-            if(!editarusuario) return res.status(404).send({mensaje: 'No se ha podido actualizar el usuario'})
-            return res.status(200).send(editarusuario)
+        Usuario.findOne({ carnet: params.carnet}, (err, usuariosEncontrado) =>{
+            if (err) return res.status(404).send({mensaje: "Error en la petición de busqueda"});
+            if(!usuariosEncontrado) return res.status(404).send({mensaje: "no existe usuario con este numero de carnet"});
+            
+            Usuario.findByIdAndUpdate(usuariosEncontrado._id, params, {new: true}, (err, editarusuario) => {
+                if(err) return res.status(500).send({mensaje: 'Error en la petición de editar'})
+                if(!editarusuario) return res.status(404).send({mensaje: 'No se ha podido actualizar el usuario'})
+                return res.status(200).send(editarusuario)
+            })
         })
-    })
-}
-
-function EditarMiPropioUsuario(req, res){
-    var params = req.body;
-    var userId = req.params.idU
-
-    Usuario.findByIdAndUpdate(userId, params, {new: true}, (err, editarusuario) => {
-        if(err) return res.status(500).send({mensaje: 'Error en la petición de editar'})
-        if(!editarusuario) return res.status(404).send({mensaje: 'No se ha podido actualizar el usuario'})
-        return res.status(200).send(editarusuario)
     })
 }
 
 function EliminarUsuariosComoAdmin(req, res){
+    var params = req.body;
     var userId = req.params.idU
-    var ElIdU = req.params.EIdU
 
     Usuario.findOne({ _id: userId, rol: "admin"}, (err, usuariosEncontrado) =>{
-        if (err) return res.status(500).send({mensaje: "Error en la petición de busqueda"});
+        if (err) return res.status(404).send({mensaje: "Error en la petición de busqueda"});
         if(!usuariosEncontrado) return res.status(404).send({mensaje: "No tienes permiso para realizar esta petición"});
 
-        Usuario.findByIdAndDelete(ElIdU, (err, eliminarusuario) => {
-            if(err) return res.status(500).send({mensaje: 'Error en la petición de eliminar'})
-            if(!eliminarusuario) return res.status(404).send({mensaje: 'No se ha podido eliminar el usuario'})
-            return res.status(200).send({mensaje: 'Su usuario fue eliminado'})
+        Usuario.findOne({ carnet: params.carnet}, (err, usuariosEncontrado) =>{
+            if (err) return res.status(404).send({mensaje: "Error en la petición de busqueda"});
+            if(!usuariosEncontrado) return res.status(404).send({mensaje: "No existe usuario con este numero de carnet"});
+            
+            Usuario.findByIdAndDelete(usuariosEncontrado._id, (err, eliminarusuario) => {
+                if(err) return res.status(500).send({mensaje: 'Error en la petición de eliminar'})
+                if(!eliminarusuario) return res.status(404).send({mensaje: 'No se ha podido eliminar el usuario'})
+                return res.status(200).send({mensaje: 'Su usuario fue eliminado'})
+            })
         })
     })
 }
 
-function EliminarMiUsuario(req, res){
-    var ElIdU = req.params.EIdU
 
-    Usuario.findByIdAndDelete(ElIdU, (err, eliminarusuario) => {
-        if(err) return res.status(500).send({mensaje: 'Error en la petición de eliminar'})
-        if(!eliminarusuario) return res.status(404).send({mensaje: 'No se ha podido eliminar el usuario'})
-        return res.status(200).send({mensaje: 'Su usuario fue eliminado'})
-    })
-}
 
 module.exports = {
     login,
@@ -288,7 +278,5 @@ module.exports = {
     ListarTodosLosUsuariosDescendente,
     BuscarUnUsuarioId,
     EditarUsuarioComoAdmin,
-    EditarMiPropioUsuario,
-    EliminarUsuariosComoAdmin,
-    EliminarMiUsuario
+    EliminarUsuariosComoAdmin
 }
