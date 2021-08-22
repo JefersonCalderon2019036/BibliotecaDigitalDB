@@ -55,31 +55,13 @@ function AgregarUnNuevoLibro(req, res){
                             ModeloLibros.descripcion = params.descripcion;
                             ModeloLibros.copias = params.copias;
                             ModeloLibros.Dispobles = params.copias;
+                            ModeloLibros.palabrasclaves = arraydatos;
+                            ModeloLibros.Temas = arraytemas;
 
                             ModeloLibros.save((err, userSaved) => {
                                 if(err) res.status(500).send({mensaje:"Error en la petición de guardado"})
                                 if(!userSaved) res.status(404).send({mensaje: "No se a podido guardar su libro"})
-
-                                for (var i = 0; i < arraydatos.length; i++) {
-                                    Libros.findByIdAndUpdate(userSaved._id, {
-                                        $push: {palabrasclaves: {palabras: arraydatos[i]}}
-                                    },{new: true}, (err, palabrasclavesguardadas)=>{
-                                        if(err) console.log("Error en la petición de guardado")
-                                        if(!palabrasclavesguardadas) console.log("No se a podido cuardar la palabra clave")
-                                        console.log("palabra clave cargada") 
-                                    } )
-                                }
-
-                                for (var i = 0; i < arraytemas.length; i++) {
-                                    Libros.findByIdAndUpdate(userSaved._id, {
-                                        $push: {Temas: {temas: arraytemas[i]}}
-                                    },{new: true}, (err, palabrasclavesguardadas)=>{
-                                        if(err) console.log("Error en la petición de guardado")
-                                        if(!palabrasclavesguardadas) console.log("No se a podido cuardar la palabra clave")
-                                        console.log("tema cargado") 
-                                    } )
-                                }
-
+                                return res.status(200).send(userSaved)
                             })
                         }       
                     })
@@ -95,10 +77,10 @@ function AgregarUnNuevoLibro(req, res){
 function buscarporpalabrasclaves(req, res){
     var params = req.body.busqueda
     
-    Libros.find({$or: [{}]}).exec((err, userGetId)=>{
+    Libros.find({palabrasclaves: params},(err, LibrosEncontrados) => {
         if(err) return res.status(500).send({mensaje: 'Error en la peticion'})
-        if(!userGetId) return res.status(404).send({mensaje: 'Error al obtener los datos del equipo'})
-        return res.status(200).send(userGetId)
+        if(!LibrosEncontrados) return res.status(500).send({mensaje: 'Error al obtener los libros'})
+        return res.status(200).send(LibrosEncontrados)
     })
 }
 
