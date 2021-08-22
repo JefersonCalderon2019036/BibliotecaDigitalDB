@@ -12,7 +12,9 @@ var api = express.Router();
 
 api.put("/login", controladrousuario.login)
 api.post("/CrearUnUsuarioEstudiante", controladrousuario.CrearUnUsuarioEstudiante);
-api.get("/ListarTodosLosUsuarios/:idU", md_autentication.ensureAuth, controladrousuario.ListarTodosLosUsuarios);
+api.post("/CrearUnUsuarioComoAdmin/:idU", md_autentication.ensureAuth, controladrousuario.CrearUnUsuarioComoAdmin);
+api.get("/ListarTodosLosUsuariosAscendente/:idU", md_autentication.ensureAuth, controladrousuario.ListarTodosLosUsuariosAscendente);
+api.get("/ListarTodosLosUsuariosDescendente/:idU", md_autentication.ensureAuth, controladrousuario.ListarTodosLosUsuariosDescendente);
 api.get("/BuscarUnUsuarioId/:idU", md_autentication.ensureAuth, controladrousuario.BuscarUnUsuarioId);
 api.put("/EditarUsuarioComoAdmin/:idU/:IdUserEditar", md_autentication.ensureAuth, controladrousuario.EditarUsuarioComoAdmin)
 api.put("/EditarMiUsuario/:idU", md_autentication.ensureAuth, controladrousuario.EditarMiPropioUsuario)

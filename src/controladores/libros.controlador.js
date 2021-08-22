@@ -118,7 +118,7 @@ function ObtenerTodosLosLibros(req, res){
         }else{
             return res.status(200).send(UsuariosEncontrados)
         }
-    })
+    }).sort({autor:1});
 }
 
 function ObtenerUnSoloLibro(req, res){
