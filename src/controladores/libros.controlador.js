@@ -27,6 +27,12 @@ function AgregarUnNuevoLibro(req, res){
                             var arraydatos = []
                             var arraytemas = []
 
+                            console.log(posicion1)
+
+                            if(posicion1 == -1){
+                                arraydatos.push(texto)
+                            }else{
+
                             do{
                                 var posicion2 = texto.indexOf(",")
                                 var imprimirtexto = texto.substr(0, posicion2)
@@ -34,19 +40,25 @@ function AgregarUnNuevoLibro(req, res){
                                 posicion2 = posicion2+2
                                 texto = texto.substring(posicion2)
                                 var posicion1 = texto.indexOf(",")
-                            }while(posicion1 != -1)
+                            }while(posicion1 != -1 )
                             arraydatos.push(texto)
                             
+                            }
+                            var posicion1 = temas.indexOf(",")
 
-                            do{
-                                var posicion2 = temas.indexOf(",")
-                                var imprimirtexto = temas.substr(0, posicion2)
-                                arraytemas.push(imprimirtexto)
-                                posicion2 = posicion2+2
-                                temas = temas.substring(posicion2)
-                                var posicion1 = temas.indexOf(",")
-                            }while(posicion1 != -1)
-                            arraytemas.push(temas)
+                            if(posicion1 == -1){
+                                arraytemas.push(temas)
+                            }else{
+                                do{
+                                    var posicion2 = temas.indexOf(",")
+                                    var imprimirtexto = temas.substr(0, posicion2)
+                                    arraytemas.push(imprimirtexto)
+                                    posicion2 = posicion2+2
+                                    temas = temas.substring(posicion2)
+                                    var posicion1 = temas.indexOf(",")
+                                }while(posicion1 != -1)
+                                arraytemas.push(temas)
+                            }
 
 
                             ModeloLibros.autor = params.autor;
