@@ -180,11 +180,6 @@ function login(req, res){
         if(usuariosEncontrado){
             bcrypt.compare(params.contrasena, usuariosEncontrado.contrasena, (err, passCorrecta)=>{
                 if(passCorrecta){
-                    const clc = require('cli-color'); 
-                    console.log("Usuario Logeado")
-                    console.log("Nombre del usuario: "+clc. green(usuariosEncontrado.usuario))
-                    console.log("Correo electronico: "+clc. green(usuariosEncontrado.correoelectronico))
-                    console.log("")
                     return res.status(200).send({
                         token: jwt.createToken(usuariosEncontrado),
                         usuariosEncontrado
