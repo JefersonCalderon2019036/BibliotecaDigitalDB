@@ -135,8 +135,19 @@ function ObtenerTodasLasRevistas(req, res){
     }).sort({autor:1});
 }
 
+function ObtenerUnaSolaRevista(req, res){
+    var userId = req.params.idU
+
+    Revistas.findOne({ _id: userId}, (err, usuariosEncontrado) =>{
+        if (err) return res.status(500).send({mensaje: "Error en la peticion"});
+        if(!usuariosEncontrado) return res.status(404).send({mensaje: "No hay libro con este código de registro"});
+        res.status(200).send(usuariosEncontrado)
+    })  
+}
+
 module.exports = {
     AgregarUnRevista,
     buscarporpalabrasclaves,
-    ObtenerTodasLasRevistas
+    ObtenerTodasLasRevistas,
+    ObtenerUnaSolaRevista
 }

@@ -12,5 +12,6 @@ var api = express.Router();
 api.post("/AgregarUnRevista/:idU", md_autentication.ensureAuth, controladrorevistas.AgregarUnRevista)
 api.get("/buscarporpalabrasclavesRevistas", md_autentication.ensureAuth, controladrorevistas.buscarporpalabrasclaves)
 api.get("/ObtenerTodasLasRevistas", md_autentication.ensureAuth, controladrorevistas.ObtenerTodasLasRevistas)
+api.get("/ObtenerUnaSolaRevista/:idU", md_autentication.ensureAuth, controladrorevistas.ObtenerUnaSolaRevista)
 
 module.exports = api;
