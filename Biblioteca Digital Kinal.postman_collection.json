@@ -703,6 +703,96 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Obtener Una Sola Revista /idrevista",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2Mjk3NjA0MzgsImV4cCI6MTYzMTc0NzYzOH0.FKaD8zZn3ykth8k-AoXdycm9M54yJhBb1czAZB-1lN8",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/ObtenerUnaSolaRevista/61242475e4fa012a70750e74",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"ObtenerUnaSolaRevista",
+								"61242475e4fa012a70750e74"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "EditarRevistas /iduser /idrevista",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2Mjk3NjA0MzgsImV4cCI6MTYzMTc0NzYzOH0.FKaD8zZn3ykth8k-AoXdycm9M54yJhBb1czAZB-1lN8",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "imagen",
+									"value": "http://cdn2.dineroenimagen.com/media/dinero/styles/xlarge/public/images/blogs/javalogo.jpg",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:3000/api/EditarRevistas/6122e328c6eecf299cd2f428/61242475e4fa012a70750e74",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"EditarRevistas",
+								"6122e328c6eecf299cd2f428",
+								"61242475e4fa012a70750e74"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "EliminarRevista /iduser /idrevista",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2Mjk3NjA0MzgsImV4cCI6MTYzMTc0NzYzOH0.FKaD8zZn3ykth8k-AoXdycm9M54yJhBb1czAZB-1lN8",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:3000/api/EliminarRevista/6122e328c6eecf299cd2f428/61242475e4fa012a70750e74",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"EliminarRevista",
+								"6122e328c6eecf299cd2f428",
+								"61242475e4fa012a70750e74"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
