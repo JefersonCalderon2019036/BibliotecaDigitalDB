@@ -10,6 +10,7 @@ var ModeloUsuario = Schema({
     correoelectronico: String,
     contrasena: String,
     rol: String,
+    librosprestados: Number
 })
 
 module.exports = mongooes.model("Usuarios", ModeloUsuario)

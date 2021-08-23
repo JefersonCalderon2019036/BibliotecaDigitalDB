@@ -32,6 +32,7 @@ function CrearUnAdministrador(req, res){
                     UsuarioModelo.correoelectronico = "adminpractica";
                     UsuarioModelo.contrasena = passwordHash;
                     UsuarioModelo.rol = "admin";
+                    UsuarioModelo.librosprestados = 0;
 
                     UsuarioModelo.save((err, userSaved) => {
                         if(err) console.log("Error en la petición de guardado")
@@ -46,50 +47,7 @@ function CrearUnAdministrador(req, res){
     })
 }
 
-function CrearUnUsuarioEstudiante(req, res){
-    var UsuarioModelo = new Usuario();
-    var params = req.body;
 
-    /* se le piden que rellene los siguientes datos para crear su perfil */
-    if(params.carnet && params.usuario && params.nombre && params.apellido && params.correoelectronico && params.contrasena){
-
-        /* se busca que si hay un usuario con ese carnet*/
-        Usuario.findOne({carnet: params.carnet,usuario : params.Usuario}, (err, UsuarioEncontrado) => {
-            if(err) res.status(500).send({mensaje:"Error en la petición de busqueda de usuario"})
-
-            if(UsuarioEncontrado){
-                res.status(404).send({mensaje: "Ya existe este usuario"})
-            }else{
-                bcrypt.hash(params.contrasena, null, null, (err, passwordHash) => {
-
-                    if(err) return res.status(500).send({mensaje: "Error en la petición de encriptación"})
-    
-                    if(passwordHash){
-                        UsuarioModelo.carnet = params.carnet;
-                        UsuarioModelo.imagen = "http://www.w3bai.com/w3css/img_avatar3.png";
-                        UsuarioModelo.usuario = params.usuario;
-                        UsuarioModelo.nombre = params.nombre;
-                        UsuarioModelo.apellido = params.apellido;
-                        UsuarioModelo.correoelectronico = params.correoelectronico;
-                        UsuarioModelo.contrasena = passwordHash;
-                        UsuarioModelo.rol = "estudiante";
-    
-                        UsuarioModelo.save((err, userSaved) => {
-                            if(err) res.status(500).send({mensaje:"Error en la petición de guardado"})
-                            if(!userSaved) res.status(404).send({mensaje: "No se a podido guardar el usuario admin"})
-                            res.status(200).send(userSaved)
-                        })
-                    }else{
-                        res.status(404).send({mensaje:"No se pudo encriptar la contraseña"})
-                    }
-                })
-            }
-        })
-
-    }else{
-        return res.status(404).send({mensaje: "Rellene los datos necesarios para crear su perfil"})
-    }
-}
 
 function CrearUnUsuarioComoAdmin(req, res){
     var UsuarioModelo = new Usuario();
@@ -122,6 +80,7 @@ function CrearUnUsuarioComoAdmin(req, res){
                         UsuarioModelo.apellido = params.apellido;
                         UsuarioModelo.correoelectronico = params.correoelectronico;
                         UsuarioModelo.contrasena = passwordHash;
+                        UsuarioModelo.librosprestados = 0;
                         if(params.rol){
                             UsuarioModelo.rol = params.rol;
                         }else{
@@ -196,6 +155,21 @@ function BuscarUnUsuarioId(req, res){
     })    
 }
 
+function BuscarUnUsuarioPorCarnet(req, res){
+    var userId = req.params.idU
+    var params = req.body;
+
+    Usuario.findOne({ _id: userId, rol: "admin"}, (err, usuariosEncontrado) =>{
+        if (err) return res.status(500).send({mensaje: "Error en la peticion"});
+        if(!usuariosEncontrado) return res.status(404).send({mensaje: "No tienes permiso para realizar esta petición"});
+
+        Usuario.findOne({ carnet: params.carnet}, (err, usuariosEncontrado) =>{
+            if (err) return res.status(500).send({mensaje: "Error en la peticion"});
+            if(!usuariosEncontrado) return res.status(404).send({mensaje: "No hay ningun usuario con este código de registro"});
+            res.status(200).send(usuariosEncontrado)
+        }) 
+    })       
+}
 
 function login(req, res){
     var params = req.body;
@@ -272,11 +246,11 @@ function EliminarUsuariosComoAdmin(req, res){
 module.exports = {
     login,
     CrearUnAdministrador,
-    CrearUnUsuarioEstudiante,
     CrearUnUsuarioComoAdmin,
     ListarTodosLosUsuariosAscendente,
     ListarTodosLosUsuariosDescendente,
     BuscarUnUsuarioId,
+    BuscarUnUsuarioPorCarnet,
     EditarUsuarioComoAdmin,
     EliminarUsuariosComoAdmin
 }

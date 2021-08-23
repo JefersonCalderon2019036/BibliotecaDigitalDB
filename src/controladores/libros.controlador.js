@@ -9,7 +9,11 @@ function AgregarUnNuevoLibro(req, res){
    var ModeloLibros = new Libros();
 
    /* se verifica que se allan llenado los datos necesarios */
-   if(params.palabrasclaves && params.autor && params.nombre && params.edicion && params.temas){
+   if(params.palabrasclaves 
+    && params.autor 
+    && params.nombre 
+    && params.edicion 
+    && params.Temas){
 
     /* se busca el usuario para ver si es administrador */
     Usuario.findOne({ _id: userId, rol: "admin"}, (err, usuariosEncontrado) => {
@@ -21,13 +25,13 @@ function AgregarUnNuevoLibro(req, res){
                         if(libroencontrado){
                             return res.status(200).send({mensaje: "El libro ya existe"})
                         }else{
+
+                            // Se realiza la separación de datos de las palabras claves
                             var texto = params.palabrasclaves
-                            var temas = params.temas
+                            var temas = params.Temas
                             var posicion1 = texto.indexOf(",")
                             var arraydatos = []
                             var arraytemas = []
-
-                            console.log(posicion1)
 
                             if(posicion1 == -1){
                                 arraydatos.push(texto)
@@ -44,6 +48,8 @@ function AgregarUnNuevoLibro(req, res){
                             arraydatos.push(texto)
                             
                             }
+
+                            // Se realiza la separación de datos de los temas
                             var posicion1 = temas.indexOf(",")
 
                             if(posicion1 == -1){
@@ -60,6 +66,7 @@ function AgregarUnNuevoLibro(req, res){
                                 arraytemas.push(temas)
                             }
 
+                            // se gurda el nuevo libro
                             ModeloLibros.imagen = params.imagen;
                             ModeloLibros.autor = params.autor;
                             ModeloLibros.nombre = params.nombre;
@@ -69,7 +76,7 @@ function AgregarUnNuevoLibro(req, res){
                             ModeloLibros.Dispobles = params.copias;
                             ModeloLibros.palabrasclaves = arraydatos;
                             ModeloLibros.Temas = arraytemas;
-
+                            ModeloLibros.librosprestados = 0;
                             ModeloLibros.save((err, userSaved) => {
                                 if(err) res.status(500).send({mensaje:"Error en la petición de guardado"})
                                 if(!userSaved) res.status(404).send({mensaje: "No se a podido guardar su libro"})

@@ -11,11 +11,11 @@ var md_autentication = require("../middlewares/authenticated")
 var api = express.Router();
 
 api.put("/login", controladrousuario.login)
-api.post("/CrearUnUsuarioEstudiante", controladrousuario.CrearUnUsuarioEstudiante);
 api.post("/CrearUnUsuarioComoAdmin/:idU", md_autentication.ensureAuth, controladrousuario.CrearUnUsuarioComoAdmin);
 api.get("/ListarTodosLosUsuariosAscendente/:idU", md_autentication.ensureAuth, controladrousuario.ListarTodosLosUsuariosAscendente);
 api.get("/ListarTodosLosUsuariosDescendente/:idU", md_autentication.ensureAuth, controladrousuario.ListarTodosLosUsuariosDescendente);
 api.get("/BuscarUnUsuarioId/:idU", md_autentication.ensureAuth, controladrousuario.BuscarUnUsuarioId);
+api.get("/BuscarUnUsuarioPorCarnet/:idU", md_autentication.ensureAuth, controladrousuario.BuscarUnUsuarioPorCarnet);
 api.put("/EditarUsuarioComoAdmin/:idU", md_autentication.ensureAuth, controladrousuario.EditarUsuarioComoAdmin)
 api.delete("/EliminarUsuariosComoAdmin/:idU", md_autentication.ensureAuth, controladrousuario.EliminarUsuariosComoAdmin)
 
