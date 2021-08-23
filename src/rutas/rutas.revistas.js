@@ -13,5 +13,7 @@ api.post("/AgregarUnRevista/:idU", md_autentication.ensureAuth, controladrorevis
 api.get("/buscarporpalabrasclavesRevistas", md_autentication.ensureAuth, controladrorevistas.buscarporpalabrasclaves)
 api.get("/ObtenerTodasLasRevistas", md_autentication.ensureAuth, controladrorevistas.ObtenerTodasLasRevistas)
 api.get("/ObtenerUnaSolaRevista/:idU", md_autentication.ensureAuth, controladrorevistas.ObtenerUnaSolaRevista)
+api.put("/EditarRevistas/:idU/:IdE", md_autentication.ensureAuth, controladrorevistas.EditarRevistas)
+api.delete("/EliminarRevista/:idU/:IdE", md_autentication.ensureAuth, controladrorevistas.EliminarRevista)
 
 module.exports = api;
