@@ -14,8 +14,12 @@ api.get("/buscarporpalabrasclavesLibros", md_autentication.ensureAuth, controlad
 api.get("/ObtenerTodosLosLibros", md_autentication.ensureAuth, controladordelibros.ObtenerTodosLosLibros)
 api.get("/ObtenerTodasLasRevistas", md_autentication.ensureAuth, controladordelibros.ObtenerTodasLasRevistas)
 api.get("/ObtenerUnSoloLibro/:idU", md_autentication.ensureAuth, controladordelibros.ObtenerUnSoloLibro)
+api.get("/ObtenerDocumentosMasVistos", md_autentication.ensureAuth, controladordelibros.ObtenerDocumentosMasVistos)
 api.put("/EditarLibros/:idU/:IdE", md_autentication.ensureAuth, controladordelibros.EditarLibros)
 api.delete("/ELiminarUnLibro/:idU/:IdE", md_autentication.ensureAuth, controladordelibros.ELiminarUnLibro)
 api.put("/PrestarLibros/:idU/:idl", md_autentication.ensureAuth, controladordelibros.PrestarLibros)
+api.put("/devolverlibro/:idl", md_autentication.ensureAuth, controladordelibros.devolverlibro)
+api.get("/ObtenerUnSoloPrestamo/:idl", md_autentication.ensureAuth, controladordelibros.ObtenerUnSoloPrestamo)
+api.get("/ObtenerPrestamosPorUsuario/:idU", md_autentication.ensureAuth, controladordelibros.ObtenerPrestamosPorUsuario)
 
 module.exports = api;
