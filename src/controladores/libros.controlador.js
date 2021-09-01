@@ -111,13 +111,13 @@ function buscarporpalabrasclaves(req, res){
     
     Libros.find({palabrasclaves: params},(err, BusquedaPorPalabrasClaves) => {
         if(err) return res.status(500).send({mensaje: 'Error en la peticion'})
-        if(!BusquedaPorPalabrasClaves) return res.status(500).send({mensaje: 'Error al obtener los libros'})
+        if(!BusquedaPorPalabrasClaves) return res.status(404).send({mensaje: 'Error al obtener los libros'})
         if(BusquedaPorPalabrasClaves <= 0){
             Libros.find({Temas: params},(err, BusquedaPorTemas) => {
                 if(err) return res.status(500).send({mensaje: 'Error en la peticion'})
-                if(!BusquedaPorTemas) return res.status(500).send({mensaje: 'Error al obtener los libros'})
+                if(!BusquedaPorTemas) return res.status(404).send({mensaje: 'Error al obtener los libros'})
                 if(BusquedaPorTemas <= 0){
-                    return res.status(200).send({mensaje: 'No hay libros con estos datos de busqueda'})
+                    return res.status(404).send({mensaje: 'No hay libros con estos datos de busqueda'})
                 }else{
                     return res.status(200).send(BusquedaPorTemas)
                 }
@@ -179,7 +179,7 @@ function ObtenerDocumentosMasVistos(req, res){
         }else{
             return res.status(200).send(UsuariosEncontrados)
         }
-    }).sort({vecesvisto:1}).limit(5);
+    }).sort({vecesvisto:1}).limit(3);
 }
 
 function EditarLibros(req, res){

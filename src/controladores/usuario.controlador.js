@@ -174,24 +174,28 @@ function BuscarUnUsuarioPorCarnet(req, res){
 function login(req, res){
     var params = req.body;
 
-    Usuario.findOne({ correoelectronico: params.correoelectronico}, (err, usuariosEncontrado) =>{
-        if (err) return res.status(500).send({mensaje: "Error en la peticion"});
+    if(params.correoelectronico && params.contrasena){
+        Usuario.findOne({ correoelectronico: params.correoelectronico}, (err, usuariosEncontrado) =>{
+            if (err) return res.status(500).send({mensaje: "Error en la peticion"});
 
-        if(usuariosEncontrado){
-            bcrypt.compare(params.contrasena, usuariosEncontrado.contrasena, (err, passCorrecta)=>{
-                if(passCorrecta){
-                    return res.status(200).send({
-                        token: jwt.createToken(usuariosEncontrado),
-                        usuariosEncontrado
-                    });
-                }else{
-                    return res.status(404).send({mensaje: "El usuario no se pudo encontrar"})
-                }
-            })
-        }else{
-            return res.status(404).send({mensaje: "El usuario no ha podido ingresar"})
-        }
-    })
+            if(usuariosEncontrado){
+                bcrypt.compare(params.contrasena, usuariosEncontrado.contrasena, (err, passCorrecta)=>{
+                    if(passCorrecta){
+                        return res.status(200).send({
+                            token: jwt.createToken(usuariosEncontrado),
+                            usuariosEncontrado
+                        });
+                    }else{
+                        return res.status(404).send({mensaje: "Su contraseña es incorrecta"})
+                    }
+                })
+            }else{
+                return res.status(404).send({mensaje: "Este correo no existe"})
+            }
+        })
+    }else{
+        return res.status(404).send({mensaje: "Ingrese su correo y contraseña"})
+    }
 }
 
 function EditarUsuarioComoAdmin(req, res){
