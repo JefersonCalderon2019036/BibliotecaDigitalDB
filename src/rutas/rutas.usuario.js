@@ -15,8 +15,8 @@ api.post("/CrearUnUsuarioComoAdmin/:idU", md_autentication.ensureAuth, controlad
 api.get("/ListarTodosLosUsuariosAscendente/:idU", md_autentication.ensureAuth, controladrousuario.ListarTodosLosUsuariosAscendente);
 api.get("/ListarTodosLosUsuariosDescendente/:idU", md_autentication.ensureAuth, controladrousuario.ListarTodosLosUsuariosDescendente);
 api.get("/BuscarUnUsuarioId/:idU", md_autentication.ensureAuth, controladrousuario.BuscarUnUsuarioId);
-api.get("/BuscarUnUsuarioPorCarnet/:idU", md_autentication.ensureAuth, controladrousuario.BuscarUnUsuarioPorCarnet);
-api.put("/EditarUsuarioComoAdmin/:idU", md_autentication.ensureAuth, controladrousuario.EditarUsuarioComoAdmin)
-api.delete("/EliminarUsuariosComoAdmin/:idU", md_autentication.ensureAuth, controladrousuario.EliminarUsuariosComoAdmin)
+api.put("/BuscarUnUsuarioPorCarnet/:idU", md_autentication.ensureAuth, controladrousuario.BuscarUnUsuarioPorCarnet);
+api.put("/EditarUsuarioComoAdmin/:idU/:idUsuario", md_autentication.ensureAuth, controladrousuario.EditarUsuarioComoAdmin)
+api.delete("/EliminarUsuariosComoAdmin/:idU/:idEu", md_autentication.ensureAuth, controladrousuario.EliminarUsuariosComoAdmin)
 
 module.exports = api;

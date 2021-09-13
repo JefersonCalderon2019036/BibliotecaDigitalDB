@@ -341,7 +341,17 @@ function ObtenerPrestamosPorUsuario(req,res){
     var Userid = req.params.idU
     Prestamos.find({ iduser: Userid},(err, libroeditado) => {
         if(err) return res.status(500).send({mensaje: 'Error en la petición de editar'})
-        if(!libroeditado) return res.status(404).send({mensaje: 'No existe hay prestamos echos por este usuario'})
+        if(!libroeditado) return res.status(404).send({mensaje: 'No existe prestamos echos por este usuario'})
+        return res.status(200).send(libroeditado)
+    })
+}
+
+function ObtenerPrestamoPorUsuarioyLibro(req, res){
+    var Userid = req.params.idU
+    var libroid = req.params.idl
+    Prestamos.findOne({ iduser: Userid, idlibro: libroid},(err, libroeditado) => {
+        if(err) return res.status(500).send({mensaje: 'Error en la petición de busqueda'})
+        if(!libroeditado) return res.status(404).send({mensaje: 'No existe hay documentos con este código'})
         return res.status(200).send(libroeditado)
     })
 }
@@ -358,5 +368,6 @@ module.exports = {
     devolverlibro,
     ObtenerDocumentosMasVistos,
     ObtenerUnSoloPrestamo,
-    ObtenerPrestamosPorUsuario
+    ObtenerPrestamosPorUsuario,
+    ObtenerPrestamoPorUsuarioyLibro
 }

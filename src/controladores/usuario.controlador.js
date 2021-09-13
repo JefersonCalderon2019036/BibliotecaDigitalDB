@@ -7,7 +7,7 @@ var jwt = require('../servicios/jwt');
 function CrearUnAdministrador(req, res){
     var UsuarioModelo = new Usuario();
 
-    Usuario.findOne({carnet: 0,usuario : "adminpractica"}, (err, UsuarioEncontrado) => {
+    Usuario.findOne({carnet: 1,usuario : "adminpractica"}, (err, UsuarioEncontrado) => {
         if(err) console.log("Error en la petición de busqueda de usuario")
 
         if(UsuarioEncontrado){
@@ -25,7 +25,7 @@ function CrearUnAdministrador(req, res){
                 if(err) console.log("Error en la petición de encriptación")
 
                 if(passwordHash){
-                    UsuarioModelo.carnet = 0;
+                    UsuarioModelo.carnet = 1;
                     UsuarioModelo.imagen = "http://www.w3bai.com/w3css/img_avatar3.png";
                     UsuarioModelo.usuario = "adminpractica";
                     UsuarioModelo.nombre = "adminpractica";
@@ -46,8 +46,6 @@ function CrearUnAdministrador(req, res){
         }
     })
 }
-
-
 
 function CrearUnUsuarioComoAdmin(req, res){
     var UsuarioModelo = new Usuario();
@@ -74,7 +72,11 @@ function CrearUnUsuarioComoAdmin(req, res){
     
                     if(passwordHash){
                         UsuarioModelo.carnet = params.carnet;
-                        UsuarioModelo.imagen = "http://www.w3bai.com/w3css/img_avatar3.png";
+                        if(params.imagen){
+                            UsuarioModelo.imagen = params.imagen;
+                        }else{
+                            UsuarioModelo.imagen = "http://www.w3bai.com/w3css/img_avatar3.png";
+                        }
                         UsuarioModelo.usuario = params.usuario;
                         UsuarioModelo.nombre = params.nombre;
                         UsuarioModelo.apellido = params.apellido;
@@ -160,11 +162,11 @@ function BuscarUnUsuarioPorCarnet(req, res){
     var params = req.body;
 
     Usuario.findOne({ _id: userId, rol: "admin"}, (err, usuariosEncontrado) =>{
-        if (err) return res.status(500).send({mensaje: "Error en la peticion"});
+        if (err) return res.status(500).send({mensaje: "Error en la peticion de busqueda 1"});
         if(!usuariosEncontrado) return res.status(404).send({mensaje: "No tienes permiso para realizar esta petición"});
 
         Usuario.findOne({ carnet: params.carnet}, (err, usuariosEncontrado) =>{
-            if (err) return res.status(500).send({mensaje: "Error en la peticion"});
+            if (err) return res.status(500).send({mensaje: "Error en la peticion de busqueda"});
             if(!usuariosEncontrado) return res.status(404).send({mensaje: "No hay ningun usuario con este código de registro"});
             res.status(200).send(usuariosEncontrado)
         }) 
@@ -201,20 +203,18 @@ function login(req, res){
 function EditarUsuarioComoAdmin(req, res){
     var params = req.body;
     var userId = req.params.idU
+    var idUsuario = req.params.idUsuario
+    delete params.contrasena;
 
     Usuario.findOne({ _id: userId, rol: "admin"}, (err, usuariosEncontrado) =>{
         if (err) return res.status(404).send({mensaje: "Error en la petición de busqueda"});
         if(!usuariosEncontrado) return res.status(404).send({mensaje: "No tienes permiso para realizar esta petición"});
 
-        Usuario.findOne({ carnet: params.carnet}, (err, usuariosEncontrado) =>{
-            if (err) return res.status(404).send({mensaje: "Error en la petición de busqueda"});
-            if(!usuariosEncontrado) return res.status(404).send({mensaje: "no existe usuario con este numero de carnet"});
-            
-            Usuario.findByIdAndUpdate(usuariosEncontrado._id, params, {new: true}, (err, editarusuario) => {
-                if(err) return res.status(500).send({mensaje: 'Error en la petición de editar'})
-                if(!editarusuario) return res.status(404).send({mensaje: 'No se ha podido actualizar el usuario'})
-                return res.status(200).send(editarusuario)
-            })
+        console.log(params)
+        Usuario.findByIdAndUpdate(idUsuario, params, { new: true }, (err, usuarioActualizado)=>{
+            if(err) return res.status(500).send({ mensaje: 'Error en la peticion' });
+            if(!usuarioActualizado) return res.status(404).send({ mensaje: 'No se ha podido actualizar al Usuario' });
+            return res.status(200).send(usuarioActualizado);
         })
     })
 }
@@ -222,20 +222,16 @@ function EditarUsuarioComoAdmin(req, res){
 function EliminarUsuariosComoAdmin(req, res){
     var params = req.body;
     var userId = req.params.idU
+    var EUser = req.params.idEu
 
     Usuario.findOne({ _id: userId, rol: "admin"}, (err, usuariosEncontrado) =>{
         if (err) return res.status(404).send({mensaje: "Error en la petición de busqueda"});
         if(!usuariosEncontrado) return res.status(404).send({mensaje: "No tienes permiso para realizar esta petición"});
 
-        Usuario.findOne({ carnet: params.carnet}, (err, usuariosEncontrado) =>{
-            if (err) return res.status(404).send({mensaje: "Error en la petición de busqueda"});
-            if(!usuariosEncontrado) return res.status(404).send({mensaje: "No existe usuario con este numero de carnet"});
-            
-            Usuario.findByIdAndDelete(usuariosEncontrado._id, (err, eliminarusuario) => {
-                if(err) return res.status(500).send({mensaje: 'Error en la petición de eliminar'})
-                if(!eliminarusuario) return res.status(404).send({mensaje: 'No se ha podido eliminar el usuario'})
-                return res.status(200).send({mensaje: 'Su usuario fue eliminado'})
-            })
+        Usuario.findByIdAndDelete(EUser, (err, eliminarusuario) => {
+            if(err) return res.status(500).send({mensaje: 'Error en la petición de eliminar'})
+            if(!eliminarusuario) return res.status(404).send({mensaje: 'No se ha podido eliminar el usuario'})
+            return res.status(200).send({mensaje: 'Su usuario fue eliminado'})
         })
     })
 }
