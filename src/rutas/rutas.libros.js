@@ -17,10 +17,12 @@ api.get("/ObtenerUnSoloLibro/:idU", md_autentication.ensureAuth, controladordeli
 api.get("/ObtenerDocumentosMasVistos", md_autentication.ensureAuth, controladordelibros.ObtenerDocumentosMasVistos)
 api.put("/EditarLibros/:idU/:IdE", md_autentication.ensureAuth, controladordelibros.EditarLibros)
 api.delete("/ELiminarUnLibro/:idU/:IdE", md_autentication.ensureAuth, controladordelibros.ELiminarUnLibro)
-api.get("/PrestarLibros/:idU/:idl", md_autentication.ensureAuth, controladordelibros.PrestarLibros)
-api.put("/devolverlibro/:idl", md_autentication.ensureAuth, controladordelibros.devolverlibro)
+api.put("/PrestarLibros", md_autentication.ensureAuth, controladordelibros.PrestarLibros)
+api.put("/devolverlibro", md_autentication.ensureAuth, controladordelibros.devolverlibro)
 api.get("/ObtenerUnSoloPrestamo/:idl", md_autentication.ensureAuth, controladordelibros.ObtenerUnSoloPrestamo)
 api.get("/ObtenerPrestamosPorUsuario/:idU", md_autentication.ensureAuth, controladordelibros.ObtenerPrestamosPorUsuario)
 api.get("/ObtenerPrestamoPorUsuarioyLibro/:idU/:idl", md_autentication.ensureAuth, controladordelibros.ObtenerPrestamoPorUsuarioyLibro)
+api.get("/ObtenerTodosLosPrestamos", md_autentication.ensureAuth, controladordelibros.ObtenerTodosLosPrestamos)
+api.get("ObtenerPrestamosActivos/:idU", md_autentication.ensureAuth, controladordelibros.ObtenerPrestamosActivos)
 
 module.exports = api;

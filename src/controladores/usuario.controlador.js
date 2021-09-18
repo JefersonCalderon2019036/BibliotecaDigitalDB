@@ -210,7 +210,6 @@ function EditarUsuarioComoAdmin(req, res){
         if (err) return res.status(404).send({mensaje: "Error en la petición de busqueda"});
         if(!usuariosEncontrado) return res.status(404).send({mensaje: "No tienes permiso para realizar esta petición"});
 
-        console.log(params)
         Usuario.findByIdAndUpdate(idUsuario, params, { new: true }, (err, usuarioActualizado)=>{
             if(err) return res.status(500).send({ mensaje: 'Error en la peticion' });
             if(!usuarioActualizado) return res.status(404).send({ mensaje: 'No se ha podido actualizar al Usuario' });

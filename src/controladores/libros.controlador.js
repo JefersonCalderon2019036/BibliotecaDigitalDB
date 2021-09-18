@@ -82,7 +82,7 @@ function AgregarUnNuevoLibro(req, res){
                             ModeloLibros.ejemplares = params.ejemplares;
                             ModeloLibros.vecesvisto = 0;
                             
-                            if(params.tipo){
+                            if(params.tipo == "Revistas"){
                                 ModeloLibros.tipo = params.tipo
                             }else{
                                 ModeloLibros.tipo = "Libro"
@@ -145,9 +145,9 @@ function ObtenerTodasLasRevistas(req, res){
 
     Libros.find({tipo: "Revistas"}, (err, UsuariosEncontrados) => {
         if(err) return res.status(500).send({mensaje: 'Error en la peticion'})
-        if(!UsuariosEncontrados) return res.status(500).send({mensaje: 'Error al obtener los libros'})
+        if(!UsuariosEncontrados) return res.status(500).send({mensaje: 'Error al obtener las revistas'})
         if(UsuariosEncontrados <= 0){
-            return res.status(404).send({mensaje: 'No hay ningun libro'})
+            return res.status(404).send({mensaje: 'No hay revistas'})
         }else{
             return res.status(200).send(UsuariosEncontrados)
         }
@@ -179,7 +179,7 @@ function ObtenerDocumentosMasVistos(req, res){
         }else{
             return res.status(200).send(UsuariosEncontrados)
         }
-    }).sort({vecesvisto:1}).limit(3);
+    }).sort({vecesvisto:-1}).limit(3);
 }
 
 function EditarLibros(req, res){
@@ -262,52 +262,65 @@ function ELiminarUnLibro(req, res){
 
 function PrestarLibros(req, res){
 
-    var libroid = req.params.idl
-    var userid = req.params.idU
     var params = req.body;
     var ModeloPrestamos = new Prestamos();
     var fecha = new Date();
 
+    Prestamos.findOne({iduser: params.iduser, idlibro: params.idlibro, estado: "prestado"}, (err, PrestamoEncontrado) => {
+        if(err) return res.status(500).send({mensaje: 'Error en la petición de busqueda del prestamo'})
 
-    Usuario.findOne({ _id: userid}, (err, usuariosEncontrado) =>{
-        if (err) return res.status(500).send({mensaje: "Error en la petición de busqueda"});
-        if(!usuariosEncontrado) return res.status(404).send({mensaje: "Este usuario no existe en la base de datos"});
-
-        if(usuariosEncontrado.librosprestados >= 10){
-            return res.status(404).send({mensaje: "Ya no puedes prestar más documentos"});
+        if(PrestamoEncontrado){
+            return res.status(404).send({mensaje: 'Este prestamo ya existe, devuelve primero el libro para renovar el prestamo'})
         }else{
-            Libros.findOne({ _id: libroid}, (err, libroencontrado) =>{
-                if (err) return res.status(500).send({mensaje: "Error en la petición de busqueda"});
-                if(!libroencontrado) return res.status(404).send({mensaje: "Este libro no existe en la base de datos"});
-        
-                Prestamos.findOne({iduser: userid, idlibro: libroid, estado : "devuelto"}, (err, prestamoencontrado) =>{
-                    if (err) return res.status(500).send({mensaje: "Error en la petición de busqueda"});
-                    if(prestamoencontrado){
-                        return res.status(404).send({mensaje: "Ya tienes este libro"});
+            Usuario.findOne({carnet: params.iduser}, (err, UsuarioEncontrado) => {
+                if(err) return res.status(500).send({mensaje: 'Error en la petición de busqueda de usuario'})
+                if(!UsuarioEncontrado) return res.status(404).send({mensaje: 'Error en la busqueda de usuario'})
+
+                Libros.findOne({ _id: params.idlibro}, (err, LibroEncontrado) =>{
+                    if(err) return res.status(500).send({mensaje: 'Error en la petición de busqueda del libro'})
+                    if(!LibroEncontrado) return res.status(404).send({mensaje: 'Error en la busqueda del documento'})
+
+                    ModeloPrestamos.iduser = UsuarioEncontrado.carnet
+                    ModeloPrestamos.idlibro = LibroEncontrado._id
+                    ModeloPrestamos.imagen = LibroEncontrado.imagen
+                    ModeloPrestamos.autor = LibroEncontrado.autor
+                    ModeloPrestamos.nombre = LibroEncontrado.nombre
+                    ModeloPrestamos.edicion = LibroEncontrado.edicion
+                    ModeloPrestamos.tipo =  LibroEncontrado.tipo
+                    ModeloPrestamos.estado = "prestado"
+                    ModeloPrestamos.fechadesolicitud = fecha.toLocaleDateString()
+                    ModeloPrestamos.fechadeentrega = "Pendiente"
+
+                    let dato = UsuarioEncontrado.librosprestados
+                    let dato2 = LibroEncontrado.Dispobles
+
+                    if(dato == 10 && dato <= 0){
+                        return res.status(404).send({mensaje: "No puedes prestar mas libros"})
                     }else{
-                        ModeloPrestamos.iduser = userid;
-                        ModeloPrestamos.idlibro = libroid;
-                        ModeloPrestamos.imagen = libroencontrado.imagen;
-                        ModeloPrestamos.autor = libroencontrado.autor;
-                        ModeloPrestamos.nombre = libroencontrado.nombre;
-                        ModeloPrestamos.edicion = libroencontrado.edicion;
-                        ModeloPrestamos.tipo = libroencontrado.tipo;
-                        ModeloPrestamos.estado = "prestado";
-                        ModeloPrestamos.fechadesolicitud = fecha.toLocaleDateString();
-                        ModeloPrestamos.fechadeentrega = "";
+                        dato = dato+1
+                    }
 
-                        params.librosprestados = usuariosEncontrado.librosprestados +1;
+                    if(dato2 == 0){
+                        return res.status(404).send({mensaje: "No hay ejemplares para prestar"})
+                    }else{
+                        dato2 = dato2-1
+                    }
 
-                        Usuario.findByIdAndUpdate(userid, params, {new: true}, (err, editarusuario) => {
-                            if(err) return res.status(500).send({mensaje: 'Error en la petición de editar'})
-                            if(!editarusuario) return res.status(404).send({mensaje: 'No se ha podido actualizar el usuario'})
-                            ModeloPrestamos.save((err, PrestamosSave) => {
+                    Usuario.findByIdAndUpdate(UsuarioEncontrado._id, {librosprestados: dato}, (err, UsuarioEditado) =>{
+                        if(err) return res.status(500).send({mensaje: 'Error en la petición de editar usuario'}) 
+                        if(!UsuarioEditado) return res.status(404).send({mensaje: 'Error en la edicion de usuario'})
+
+                        Libros.findByIdAndUpdate(LibroEncontrado._id, {Dispobles: dato2}, (err, LibroEditado) => {
+                            if(err) return res.status(500).send({mensaje: 'Error en la petición de editar usuario'}) 
+                            if(!LibroEditado) return res.status(404).send({mensaje: 'Error en la edicion del Libro'})
+
+                            ModeloPrestamos.save((err, PrestaGuardado) => {
                                 if(err) res.status(500).send({mensaje:"Error en la petición de guardado"})
-                                if(!PrestamosSave) res.status(404).send({mensaje: "No se a podido guardar su libro"})
-                                return res.status(200).send(PrestamosSave)
+                                if(!PrestaGuardado) res.status(404).send({mensaje: "No se a podido realizar el prestamo"})
+                                res.status(200).send(PrestaGuardado)
                             })
                         })
-                    }
+                    })
                 })
             })
         }
@@ -315,16 +328,53 @@ function PrestarLibros(req, res){
 }
 
 function devolverlibro(req, res){
-    var libroid = req.params.idl
     var fecha = new Date();
     var params = req.body;
-    params.fechadeentrega = fecha.toLocaleDateString();
-    params.estado = "devuelto";
 
-    Prestamos.findByIdAndUpdate(libroid, params, {new: true}, (err, editarusuario) => {
-        if(err) return res.status(500).send({mensaje: 'Error en la petición de editar'})
-        if(!editarusuario) return res.status(404).send({mensaje: 'No se ha podido actualizar el prestamo'})
-        return res.status(200).send(editarusuario)
+    Prestamos.updateOne({iduser: params.iduser, idlibro: params.idlibro},
+                        {fechadeentrega: fecha.toLocaleDateString(),estado: "devuelto"},
+                        {new: true}, (err, editarprestamo) =>{
+        if(err) return res.status(500).send({mensaje: "Error en petición de editar prestamo"})
+        if(!editarprestamo) return res.status(404).send({mensaje: "Error en la petición de editar prestamo"})
+        
+        Usuario.findOne({carnet: params.iduser},(err, UsuarioEncontrado) =>{
+            if(err) return res.status(500).send({mensaje: "Error en la petición de busqueda de usuario"})
+            if(!UsuarioEncontrado) return res.status(404).send({mensaje: "Error en la petición de busqueda de usuario"})
+
+            Usuario.updateOne({carnet: params.iduser},
+                {librosprestados: UsuarioEncontrado.librosprestados - 1},
+                {new: true},(err, usuarioeditado) =>{
+                 if(err) return res.status(500).send({mensaje: "Error en la petición de editar usuario"})
+                 if(!usuarioeditado) return res.status(404).send({mensaje: "Error en la petición de edtiar usuario"})
+                 
+                Libros.findOne({ _id: params.idlibro}, (err, LibroEncontrado) =>{
+                    if(err) return res.status(500).send({mensaje: 'Error en la petición de busqueda del documento'})
+                    if(!LibroEncontrado) return res.status(404).send({mensaje: 'Error en la busqueda del documento'})
+                    
+                    Libros.updateOne({ _id: params.idlibro},{Dispobles: LibroEncontrado.Dispobles +1},
+                        {new: true}, (err, LibroEditado) =>{
+                            if(err) return res.status(500).send({mensaje: "Error en la petición de editar el documento"})
+                            if(!LibroEditado) return res.status(404).send({mensaje: "Error en la petición de editar el documento"})
+                            return res.status(200).send(editarprestamo)
+                    })
+                })
+            })
+        })
+    })
+}
+
+function ObtenerPrestamosActivos(req, res){
+    var userId = req.params.idU
+
+    Usuario.findOne({ _id: userId, rol: "admin"}, (err, usuariosEncontrado) =>{
+        if (err) return res.status(404).send({mensaje: "Error en la petición de busqueda"});
+        if(!usuariosEncontrado) return res.status(404).send({mensaje: "No tienes permiso para realizar esta petición"});
+
+        Prestamos.find({estado: "prestado"}, (err, PrestamosActivos)=>{
+            if(err) return res.status(500).send({mensaje: "Error en la petición de busqueda"})
+            if(!PrestamosActivos) return res.status(404).send({mensaje: "Error en la petición de busqueda"})
+            return res.status(200).send(PrestamosActivos)
+        })
     })
 }
 
@@ -337,23 +387,42 @@ function ObtenerUnSoloPrestamo(req,res){
     })
 }
 
+
 function ObtenerPrestamosPorUsuario(req,res){
     var Userid = req.params.idU
-    Prestamos.find({ iduser: Userid},(err, libroeditado) => {
+    Prestamos.find({ iduser: Userid, estado: "prestado"},(err, libroeditado) => {
         if(err) return res.status(500).send({mensaje: 'Error en la petición de editar'})
         if(!libroeditado) return res.status(404).send({mensaje: 'No existe prestamos echos por este usuario'})
-        return res.status(200).send(libroeditado)
-    })
+        
+        if(libroeditado.length == 0){
+            return res.status(404).send({mensaje: 'No existe prestamos actualmente'})
+        }else{
+            return res.status(200).send(libroeditado)
+        }
+    }).sort({carnet:-1});
 }
 
 function ObtenerPrestamoPorUsuarioyLibro(req, res){
     var Userid = req.params.idU
     var libroid = req.params.idl
-    Prestamos.findOne({ iduser: Userid, idlibro: libroid},(err, libroeditado) => {
+    Prestamos.findOne({ iduser: Userid, idlibro: libroid, estado: "prestado"},(err, libroeditado) => {
         if(err) return res.status(500).send({mensaje: 'Error en la petición de busqueda'})
         if(!libroeditado) return res.status(404).send({mensaje: 'No existe hay documentos con este código'})
         return res.status(200).send(libroeditado)
     })
+}
+
+function ObtenerTodosLosPrestamos(req, res){
+    Prestamos.find({},(err, libroeditado) => {
+        if(err) return res.status(500).send({mensaje: 'Error en la petición de busqueda'})
+        if(!libroeditado) return res.status(404).send({mensaje: 'Error en la busqueda.'})
+
+        if(libroeditado.length > 0){
+            return res.status(200).send(libroeditado)
+        }else{
+            return res.status(404).send({mensaje: 'No hay prestaciones echas.'}) 
+        }
+    }) 
 }
 
 module.exports = {
@@ -369,5 +438,7 @@ module.exports = {
     ObtenerDocumentosMasVistos,
     ObtenerUnSoloPrestamo,
     ObtenerPrestamosPorUsuario,
-    ObtenerPrestamoPorUsuarioyLibro
+    ObtenerPrestamoPorUsuarioyLibro,
+    ObtenerTodosLosPrestamos,
+    ObtenerPrestamosActivos
 }
