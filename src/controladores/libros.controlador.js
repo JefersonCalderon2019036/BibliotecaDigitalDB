@@ -128,12 +128,24 @@ function buscarporpalabrasclaves(req, res){
     })
 }
 
+function ObtenerTodoLosDocumentos(req, res){
+    Libros.find({}, (err, UsuariosEncontrados) => {
+        if(err) return res.status(500).send({mensaje: 'Error en la peticion'})
+        if(!UsuariosEncontrados) return res.status(500).send({mensaje: 'Error al obtener todos los documentos'})
+        if(UsuariosEncontrados.length != 0){
+            return res.status(200).send(UsuariosEncontrados)
+        }else{
+            return res.status(404).send({mensaje: 'No hay ningun documento'})
+        }
+    }).sort({autor:1});
+}
+
 function ObtenerTodosLosLibros(req, res){
 
     Libros.find({tipo: "Libro"}, (err, UsuariosEncontrados) => {
         if(err) return res.status(500).send({mensaje: 'Error en la peticion'})
         if(!UsuariosEncontrados) return res.status(500).send({mensaje: 'Error al obtener los libros'})
-        if(UsuariosEncontrados <= 0){
+        if(UsuariosEncontrados.length == 0){
             return res.status(404).send({mensaje: 'No hay ningun libro'})
         }else{
             return res.status(200).send(UsuariosEncontrados)
@@ -146,7 +158,7 @@ function ObtenerTodasLasRevistas(req, res){
     Libros.find({tipo: "Revistas"}, (err, UsuariosEncontrados) => {
         if(err) return res.status(500).send({mensaje: 'Error en la peticion'})
         if(!UsuariosEncontrados) return res.status(500).send({mensaje: 'Error al obtener las revistas'})
-        if(UsuariosEncontrados <= 0){
+        if(UsuariosEncontrados.length == 0){
             return res.status(404).send({mensaje: 'No hay revistas'})
         }else{
             return res.status(200).send(UsuariosEncontrados)
@@ -363,19 +375,34 @@ function devolverlibro(req, res){
     })
 }
 
-function ObtenerPrestamosActivos(req, res){
+function ObtenerPrestamosActivosDescendentes(req, res){
     var userId = req.params.idU
 
-    Usuario.findOne({ _id: userId, rol: "admin"}, (err, usuariosEncontrado) =>{
-        if (err) return res.status(404).send({mensaje: "Error en la petición de busqueda"});
-        if(!usuariosEncontrado) return res.status(404).send({mensaje: "No tienes permiso para realizar esta petición"});
+    Prestamos.find({estado: "prestado"}, (err, PrestamosActivos)=>{
+        if(err) return res.status(500).send({mensaje: "Error en la petición de busqueda"})
+        if(!PrestamosActivos) return res.status(404).send({mensaje: "Error en la petición de busqueda"})
 
-        Prestamos.find({estado: "prestado"}, (err, PrestamosActivos)=>{
-            if(err) return res.status(500).send({mensaje: "Error en la petición de busqueda"})
-            if(!PrestamosActivos) return res.status(404).send({mensaje: "Error en la petición de busqueda"})
+        if(PrestamosActivos.length == 0){
+            return res.status(404).send({mensaje: "No hay Prestaciones activas"})
+        }else{
             return res.status(200).send(PrestamosActivos)
-        })
-    })
+        }
+    }).sort({fechadesolicitud:1});
+}
+
+function ObtenerPrestamosInactivosDescendentes(req, res){
+    var userId = req.params.idU
+
+    Prestamos.find({estado: "devuelto"}, (err, PrestamosActivos)=>{
+        if(err) return res.status(500).send({mensaje: "Error en la petición de busqueda"})
+        if(!PrestamosActivos) return res.status(404).send({mensaje: "Error en la petición de busqueda"})
+
+        if(PrestamosActivos.length == 0){
+            return res.status(404).send({mensaje: "No hay Prestaciones activas"})
+        }else{
+            return res.status(200).send(PrestamosActivos)
+        }
+    }).sort({fechadesolicitud:1});
 }
 
 function ObtenerUnSoloPrestamo(req,res){
@@ -387,20 +414,48 @@ function ObtenerUnSoloPrestamo(req,res){
     })
 }
 
-
 function ObtenerPrestamosPorUsuario(req,res){
     var Userid = req.params.idU
     Prestamos.find({ iduser: Userid, estado: "prestado"},(err, libroeditado) => {
         if(err) return res.status(500).send({mensaje: 'Error en la petición de editar'})
         if(!libroeditado) return res.status(404).send({mensaje: 'No existe prestamos echos por este usuario'})
         
-        if(libroeditado.length == 0){
-            return res.status(404).send({mensaje: 'No existe prestamos actualmente'})
-        }else{
+        if(libroeditado.length != 0){
             return res.status(200).send(libroeditado)
+        }else{
+            return res.status(404).send({mensaje: 'No existe prestamos actualmente'})
         }
     }).sort({carnet:-1});
 }
+
+function ObtenerPDPorUsuairo(req, res){
+    var Userid = req.params.idU
+    Prestamos.find({ iduser: Userid, estado: "devuelto"},(err, libroeditado) => {
+        if(err) return res.status(500).send({mensaje: 'Error en la petición de editar'})
+        if(!libroeditado) return res.status(404).send({mensaje: 'No existe prestamos echos por este usuario'})
+        
+        if(libroeditado.length != 0){
+            return res.status(200).send(libroeditado)
+        }else{
+            return res.status(404).send({mensaje: 'No existe prestamos actualmente'})
+        }
+    }).sort({carnet:-1});
+}
+
+function HistorialDeUsuarios(req, res){
+    var Userid = req.params.idU
+    Prestamos.find({ iduser: Userid},(err, libroeditado) => {
+        if(err) return res.status(500).send({mensaje: 'Error en la petición de editar'})
+        if(!libroeditado) return res.status(404).send({mensaje: 'No existe prestamos echos por este usuario'})
+        
+        if(libroeditado.length != 0){
+            return res.status(200).send(libroeditado)
+        }else{
+            return res.status(404).send({mensaje: 'No existe prestamos actualmente'})
+        }
+    }).sort({carnet:-1});
+}
+
 
 function ObtenerPrestamoPorUsuarioyLibro(req, res){
     var Userid = req.params.idU
@@ -417,12 +472,12 @@ function ObtenerTodosLosPrestamos(req, res){
         if(err) return res.status(500).send({mensaje: 'Error en la petición de busqueda'})
         if(!libroeditado) return res.status(404).send({mensaje: 'Error en la busqueda.'})
 
-        if(libroeditado.length > 0){
+        if(libroeditado.length != 0){
             return res.status(200).send(libroeditado)
         }else{
             return res.status(404).send({mensaje: 'No hay prestaciones echas.'}) 
         }
-    }) 
+    }).sort({fechadesolicitud:1});
 }
 
 module.exports = {
@@ -440,5 +495,9 @@ module.exports = {
     ObtenerPrestamosPorUsuario,
     ObtenerPrestamoPorUsuarioyLibro,
     ObtenerTodosLosPrestamos,
-    ObtenerPrestamosActivos
+    ObtenerPrestamosActivosDescendentes,
+    ObtenerPrestamosInactivosDescendentes,
+    ObtenerTodoLosDocumentos,
+    ObtenerPDPorUsuairo,
+    HistorialDeUsuarios
 }
