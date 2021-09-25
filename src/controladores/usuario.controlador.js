@@ -11,14 +11,7 @@ function CrearUnAdministrador(req, res){
         if(err) console.log("Error en la petición de busqueda de usuario")
 
         if(UsuarioEncontrado){
-            const clc = require('cli-color'); 
-            console.log("")
-            console. log(clc. green('Ya existe tu usuario administrador'));
-            console.log("Tu usuario administrador es:")
-            console.log("Nombre del usuario: "+clc. green(UsuarioEncontrado.usuario))
-            console.log("Correo electronico: "+clc. green(UsuarioEncontrado.correoelectronico))
-            console.log("Contraseña: "+clc. green(UsuarioEncontrado.contrasena))
-            console.log("")
+            console.log(UsuarioEncontrado)
         }else{
             bcrypt.hash("adminpractica", null, null, (err, passwordHash) => {
 
