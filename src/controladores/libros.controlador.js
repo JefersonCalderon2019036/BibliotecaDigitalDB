@@ -306,6 +306,10 @@ function PrestarLibros(req, res){
 
                     let dato = UsuarioEncontrado.librosprestados
                     let dato2 = LibroEncontrado.Dispobles
+                    let datos3 = UsuarioEncontrado.cantidaddedocuentosprestados
+                        datos3 = datos3+1
+                    let datos4 = LibroEncontrado.cantidaddedocuentosprestados
+                        datos4 = datos4+1
 
                     if(dato == 10 && dato <= 0){
                         return res.status(404).send({mensaje: "No puedes prestar mas libros"})
@@ -319,14 +323,11 @@ function PrestarLibros(req, res){
                         dato2 = dato2-1
                     }
 
-                    let dato3 = UsuarioEncontrado.cantidaddedocuentosprestados+1
-                    let dato4 = LibroEncontrado.cantidaddedocuentosprestados+1
-
-                    Usuario.findByIdAndUpdate(UsuarioEncontrado._id, {librosprestados: dato, cantidaddedocuentosprestados: dato3}, (err, UsuarioEditado) =>{
+                    Usuario.updateOne({ _id:UsuarioEncontrado._id}, {librosprestados: dato, cantidaddedocuentosprestados: datos3}, {new: true}, (err, UsuarioEditado) =>{
                         if(err) return res.status(500).send({mensaje: 'Error en la petición de editar usuario'}) 
                         if(!UsuarioEditado) return res.status(404).send({mensaje: 'Error en la edicion de usuario'})
 
-                        Libros.findByIdAndUpdate(LibroEncontrado._id, {Dispobles: dato2, cantidaddedocuentosprestados: dato4}, (err, LibroEditado) => {
+                        Libros.updateOne({ _id:LibroEncontrado._id}, {Dispobles: dato2, cantidaddedocuentosprestados: datos4}, {new: true}, (err, LibroEditado) => {
                             if(err) return res.status(500).send({mensaje: 'Error en la petición de editar usuario'}) 
                             if(!LibroEditado) return res.status(404).send({mensaje: 'Error en la edicion del Libro'})
 
