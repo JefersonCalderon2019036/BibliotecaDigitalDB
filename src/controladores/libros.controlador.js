@@ -81,6 +81,7 @@ function AgregarUnNuevoLibro(req, res){
                             ModeloLibros.frecuenciaactual = params.frecuenciaactual;
                             ModeloLibros.ejemplares = params.ejemplares;
                             ModeloLibros.vecesvisto = 0;
+                            ModeloLibros.cantidaddedocuentosprestados = 0;
                             
                             if(params.tipo == "Revistas"){
                                 ModeloLibros.tipo = params.tipo
@@ -318,11 +319,14 @@ function PrestarLibros(req, res){
                         dato2 = dato2-1
                     }
 
-                    Usuario.findByIdAndUpdate(UsuarioEncontrado._id, {librosprestados: dato}, (err, UsuarioEditado) =>{
+                    let dato3 = UsuarioEncontrado.cantidaddedocuentosprestados+1
+                    let dato4 = LibroEncontrado.cantidaddedocuentosprestados+1
+
+                    Usuario.findByIdAndUpdate(UsuarioEncontrado._id, {librosprestados: dato, cantidaddedocuentosprestados: dato3}, (err, UsuarioEditado) =>{
                         if(err) return res.status(500).send({mensaje: 'Error en la petición de editar usuario'}) 
                         if(!UsuarioEditado) return res.status(404).send({mensaje: 'Error en la edicion de usuario'})
 
-                        Libros.findByIdAndUpdate(LibroEncontrado._id, {Dispobles: dato2}, (err, LibroEditado) => {
+                        Libros.findByIdAndUpdate(LibroEncontrado._id, {Dispobles: dato2, cantidaddedocuentosprestados: dato4}, (err, LibroEditado) => {
                             if(err) return res.status(500).send({mensaje: 'Error en la petición de editar usuario'}) 
                             if(!LibroEditado) return res.status(404).send({mensaje: 'Error en la edicion del Libro'})
 
@@ -480,6 +484,14 @@ function ObtenerTodosLosPrestamos(req, res){
     }).sort({fechadesolicitud:1});
 }
 
+function ObtenerLosDocumentosMasPrestados(req, res){
+    Prestamos.find((err, PrestamosEncontrado) => {
+        if (err) return res.status(404).send({mensaje: "Error en la petición de busqueda"});
+        if(!PrestamosEncontrado) return res.status(404).send({mensaje: "Error en la petición de busqueda"});
+        return res.status(200).send(PrestamosEncontrado)
+    }).sort({cantidaddedocuentosprestados:-1}).limit(10);
+}
+
 module.exports = {
     AgregarUnNuevoLibro,
     buscarporpalabrasclaves,
@@ -499,5 +511,6 @@ module.exports = {
     ObtenerPrestamosInactivosDescendentes,
     ObtenerTodoLosDocumentos,
     ObtenerPDPorUsuairo,
-    HistorialDeUsuarios
+    HistorialDeUsuarios,
+    ObtenerLosDocumentosMasPrestados
 }

@@ -11,6 +11,7 @@ var ModeloUsuario = Schema({
     contrasena: String,
     rol: String,
     librosprestados: Number,
+    cantidaddedocuentosprestados: Number
 })
 
 module.exports = mongooes.model("Usuarios", ModeloUsuario)

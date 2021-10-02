@@ -26,6 +26,7 @@ function CrearUnAdministrador(req, res){
                     UsuarioModelo.contrasena = passwordHash;
                     UsuarioModelo.rol = "admin";
                     UsuarioModelo.librosprestados = 0;
+                    UsuarioModelo.cantidaddedocuentosprestados = 0;
 
                     UsuarioModelo.save((err, userSaved) => {
                         if(err) console.log("Error en la petición de guardado")
@@ -76,6 +77,7 @@ function CrearUnUsuarioComoAdmin(req, res){
                         UsuarioModelo.correoelectronico = params.correoelectronico;
                         UsuarioModelo.contrasena = passwordHash;
                         UsuarioModelo.librosprestados = 0;
+                        UsuarioModelo.cantidaddedocuentosprestados = 0;
                         if(params.rol){
                             UsuarioModelo.rol = params.rol;
                         }else{
@@ -228,7 +230,13 @@ function EliminarUsuariosComoAdmin(req, res){
     })
 }
 
-
+function ObtenerLosUsuairosConMasPrestaciones(req, res){
+    Usuario.find((err, UsuarioEncontrado) => {
+        if (err) return res.status(404).send({mensaje: "Error en la petición de busqueda"});
+        if(!UsuarioEncontrado) return res.status(404).send({mensaje: "Error en la petición de busqueda"});
+        return res.status(200).send(UsuarioEncontrado)
+    }).sort({cantidaddedocuentosprestados:-1}).limit(10);
+}
 
 module.exports = {
     login,
@@ -239,5 +247,6 @@ module.exports = {
     BuscarUnUsuarioId,
     BuscarUnUsuarioPorCarnet,
     EditarUsuarioComoAdmin,
-    EliminarUsuariosComoAdmin
+    EliminarUsuariosComoAdmin,
+    ObtenerLosUsuairosConMasPrestaciones
 }

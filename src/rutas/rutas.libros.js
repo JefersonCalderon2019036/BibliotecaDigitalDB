@@ -20,6 +20,7 @@ api.get("/ObtenerDocumentosMasVistos", md_autentication.ensureAuth, controladord
 api.get("/ObtenerTodoLosDocumentos", md_autentication.ensureAuth, controladordelibros.ObtenerTodoLosDocumentos)
 api.put("/EditarLibros/:idU/:IdE", md_autentication.ensureAuth, controladordelibros.EditarLibros)
 api.delete("/ELiminarUnLibro/:idU/:IdE", md_autentication.ensureAuth, controladordelibros.ELiminarUnLibro)
+api.get("/ObtenerLosDocumentosMasPrestados", md_autentication.ensureAuth, controladordelibros.ObtenerLosDocumentosMasPrestados)
 
 /**Funciones para prestamos */
 api.put("/PrestarLibros", md_autentication.ensureAuth, controladordelibros.PrestarLibros)

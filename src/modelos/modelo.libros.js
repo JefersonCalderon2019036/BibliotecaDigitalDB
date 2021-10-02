@@ -14,7 +14,8 @@ var ModeloDeLibros = Schema({
     tipo: String,
     frecuenciaactual: String,
     ejemplares: String,
-    vecesvisto: Number
+    vecesvisto: Number,
+    cantidaddedocuentosprestados: Number
 })
 
 module.exports = mongooes.model("Libros", ModeloDeLibros)
