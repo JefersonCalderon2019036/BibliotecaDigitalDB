@@ -306,10 +306,6 @@ function PrestarLibros(req, res){
 
                     let dato = UsuarioEncontrado.librosprestados
                     let dato2 = LibroEncontrado.Dispobles
-                    let datos3 = UsuarioEncontrado.cantidaddedocuentosprestados
-                        datos3 = datos3+1
-                    let datos4 = LibroEncontrado.cantidaddedocuentosprestados
-                        datos4 = datos4+1
 
                     if(dato == 10 && dato <= 0){
                         return res.status(404).send({mensaje: "No puedes prestar mas libros"})
@@ -323,21 +319,27 @@ function PrestarLibros(req, res){
                         dato2 = dato2-1
                     }
 
-                    Usuario.updateOne({ _id:UsuarioEncontrado._id}, {librosprestados: dato, cantidaddedocuentosprestados: datos3}, {new: true}, (err, UsuarioEditado) =>{
-                        if(err) return res.status(500).send({mensaje: 'Error en la petición de editar usuario'}) 
-                        if(!UsuarioEditado) return res.status(404).send({mensaje: 'Error en la edicion de usuario'})
-
-                        Libros.updateOne({ _id:LibroEncontrado._id}, {Dispobles: dato2, cantidaddedocuentosprestados: datos4}, {new: true}, (err, LibroEditado) => {
-                            if(err) return res.status(500).send({mensaje: 'Error en la petición de editar usuario'}) 
-                            if(!LibroEditado) return res.status(404).send({mensaje: 'Error en la edicion del Libro'})
-
-                            ModeloPrestamos.save((err, PrestaGuardado) => {
-                                if(err) res.status(500).send({mensaje:"Error en la petición de guardado"})
-                                if(!PrestaGuardado) res.status(404).send({mensaje: "No se a podido realizar el prestamo"})
-                                res.status(200).send(PrestaGuardado)
-                            })
+                    Usuario.updateOne({_id: UsuarioEncontrado._id},
+                        {cantidaddedocuentosprestados: UsuarioEncontrado.cantidaddedocuentosprestados+1,
+                         librosprestados: dato},
+                        {new: true}, (err, editarusuario) => {
+                            if(err) return res.status(500).send({mensaje: "Error en la petición de editar usuario"})
+                            if(!editarusuario) return res.status(404).send({mensaje: "Error en la petición de edtiar usuario"})
+                            
+                            Libros.updateOne({_id: LibroEncontrado._id},
+                                {Dispobles: dato2, 
+                                cantidaddedocuentosprestados: LibroEncontrado.cantidaddedocuentosprestados+1,},
+                                {new: true}, (err, LibroEditado) =>{
+                                    if(err) return res.status(500).send({mensaje: "Error en la petición de editar el documento"})
+                                    if(!LibroEditado) return res.status(404).send({mensaje: "Error en la petición de editar el documento"})
+                                    
+                                    ModeloPrestamos.save((err, PrestamoGuardado) => {
+                                        if(err) return res.status(500).send({mensaje:"Error en la petición de guardado"})
+                                        if(!PrestamoGuardado) return res.status(404).send({mensaje: "No se a podido realizar el prestamo"})
+                                        res.status(200).send(PrestamoGuardado)
+                                    })
+                                })
                         })
-                    })
                 })
             })
         }
@@ -486,7 +488,7 @@ function ObtenerTodosLosPrestamos(req, res){
 }
 
 function ObtenerLosDocumentosMasPrestados(req, res){
-    Prestamos.find((err, PrestamosEncontrado) => {
+    Libros.find((err, PrestamosEncontrado) => {
         if (err) return res.status(404).send({mensaje: "Error en la petición de busqueda"});
         if(!PrestamosEncontrado) return res.status(404).send({mensaje: "Error en la petición de busqueda"});
         return res.status(200).send(PrestamosEncontrado)
